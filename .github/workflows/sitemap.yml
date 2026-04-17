@@ -1,0 +1,30 @@
+# .github/workflows/sitemap.yml
+name: Generate Sitemap
+
+on:
+  push:
+    branches:
+      - main # 或 master，根据你的主分支名称
+
+jobs:
+  sitemap:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # 必须，以便Action获取所有文件的提交历史
+
+      - name: Generate sitemap
+        uses: cicirello/generate-sitemap@v1
+        with:
+          base-url-path: https://lammanchiu.github.io # 必须替换为你的网站URL
+          # 可选参数:
+          # drop-extension: true  # 如果想让URL不包含.html后缀
+
+      - name: Commit and push sitemap
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+          git add sitemap.xml
+          git diff --quiet && git diff --staged --quiet || (git commit -m "Auto-update sitemap.xml" && git push)
